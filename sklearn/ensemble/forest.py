@@ -62,6 +62,7 @@ from ..utils import check_random_state, check_array, compute_sample_weight
 from ..utils.validation import DataConversionWarning, NotFittedError
 from .base import BaseEnsemble, _partition_estimators
 from ..utils.fixes import bincount
+from ..utils.multiclass import check_classification_targets
 
 __all__ = ["RandomForestClassifier",
            "RandomForestRegressor",
@@ -373,6 +374,8 @@ class ForestClassifier(six.with_metaclass(ABCMeta, BaseForest,
 
     def _set_oob_score(self, X, y):
         """Compute out-of-bag score"""
+        X = check_array(X, dtype=DTYPE, accept_sparse='csr')
+
         n_classes_ = self.n_classes_
         n_samples = y.shape[0]
 
@@ -415,6 +418,8 @@ class ForestClassifier(six.with_metaclass(ABCMeta, BaseForest,
         self.oob_score_ = oob_score / self.n_outputs_
 
     def _validate_y_class_weight(self, y):
+        check_classification_targets(y)
+
         y = np.copy(y)
         expanded_class_weight = None
 
@@ -658,6 +663,8 @@ class ForestRegressor(six.with_metaclass(ABCMeta, BaseForest, RegressorMixin)):
 
     def _set_oob_score(self, X, y):
         """Compute out-of-bag scores"""
+        X = check_array(X, dtype=DTYPE, accept_sparse='csr')
+
         n_samples = y.shape[0]
 
         predictions = np.zeros((n_samples, self.n_outputs_))

@@ -9,6 +9,10 @@ contribute.
 
 The project is hosted on http://github.com/scikit-learn/scikit-learn
 
+Scikit-learn is somewhat :ref:`selective <selectiveness>` when it comes to
+adding new algorithms, and the best way to contribute and to help the project
+is to start working on known issues.
+See :ref:`easy_issues` to get started.
 
 Submitting a bug report
 =======================
@@ -16,7 +20,7 @@ Submitting a bug report
 In case you experience issues using this package, do not hesitate to submit a
 ticket to the
 `Bug Tracker <http://github.com/scikit-learn/scikit-learn/issues>`_. You are
-also welcome to post feature requests or links to pull requests.
+also welcome to post feature requests or pull requests.
 
 
 .. _git_repo:
@@ -203,12 +207,14 @@ and Cython optimizations.
    <http://astropy.readthedocs.org/en/latest/development/workflow/development_workflow.html>`_
    sections.
 
+.. _easy_issues:
+
 Easy Issues
 -----------
 
 A great way to start contributing to scikit-learn is to pick an item from the
 list of `Easy issues
-<https://github.com/scikit-learn/scikit-learn/issues?labels=Easy>`_
+<https://github.com/scikit-learn/scikit-learn/labels/Easy>`_
 in the issue tracker. Resolving these issues allow you to start contributing
 to the project without much prior knowledge. Your assistance in this area will
 be greatly appreciated by the more experienced developers as it helps free up

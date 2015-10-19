@@ -14,6 +14,7 @@ from ..utils import check_array, check_random_state, column_or_1d
 from ..utils import ConvergenceWarning, compute_class_weight, deprecated
 from ..utils.extmath import safe_sparse_dot
 from ..utils.validation import check_is_fitted, NotFittedError
+from ..utils.multiclass import check_classification_targets
 from ..externals import six
 
 LIBSVM_IMPL = ['c_svc', 'nu_svc', 'one_class', 'epsilon_svr', 'nu_svr']
@@ -80,8 +81,8 @@ class BaseLibSVM(six.with_metaclass(ABCMeta, BaseEstimator)):
                    "gamma='%s' as of 0.17. Backward compatibility"
                    " for gamma=%s will be removed in %s")
             invalid_gamma = 0.0
-            warnings.warn(msg % (invalid_gamma, "auto",
-                invalid_gamma, "0.18"), DeprecationWarning)
+            warnings.warn(msg % (invalid_gamma, "auto", invalid_gamma, "0.18"),
+                          DeprecationWarning)
 
         self._impl = impl
         self.kernel = kernel
@@ -171,8 +172,8 @@ class BaseLibSVM(six.with_metaclass(ABCMeta, BaseEstimator)):
                              % (sample_weight.shape, X.shape))
 
         # FIXME remove (self.gamma == 0) in 0.18
-        if (self.kernel in ['poly', 'rbf']) and ((self.gamma == 0)
-                or (self.gamma == 'auto')):
+        if (self.kernel in ['poly', 'rbf']) and ((self.gamma == 0) or
+                                                 (self.gamma == 'auto')):
             # if custom gamma is not provided ...
             self._gamma = 1.0 / X.shape[1]
         elif self.gamma == 'auto':
@@ -212,7 +213,7 @@ class BaseLibSVM(six.with_metaclass(ABCMeta, BaseEstimator)):
         # XXX this is ugly.
         # Regression models should not have a class_weight_ attribute.
         self.class_weight_ = np.empty(0)
-        return np.asarray(y, dtype=np.float64, order='C')
+        return column_or_1d(y, warn=True).astype(np.float64)
 
     def _warn_from_fit_status(self):
         assert self.fit_status_ in (0, 1)
@@ -511,6 +512,7 @@ class BaseSVC(six.with_metaclass(ABCMeta, BaseLibSVM, ClassifierMixin)):
 
     def _validate_targets(self, y):
         y_ = column_or_1d(y, warn=True)
+        check_classification_targets(y)
         cls, y = np.unique(y_, return_inverse=True)
         self.class_weight_ = compute_class_weight(self.class_weight, cls, y_)
         if len(cls) < 2:
@@ -884,7 +886,7 @@ def _fit_liblinear(X, y, C, fit_intercept, intercept_scaling, class_weight,
 
         class_weight_ = compute_class_weight(class_weight, classes_, y)
     else:
-        class_weight_ = np.empty(0, dtype=np.float)
+        class_weight_ = np.empty(0, dtype=np.float64)
         y_ind = y
     liblinear.set_verbosity_wrap(verbose)
     rnd = check_random_state(random_state)
